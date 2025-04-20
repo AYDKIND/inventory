@@ -1,0 +1,24 @@
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/himalaya/public_html
+    - cd $DEPLOYPATH
+
+    # ✅ 1. Pull latest changes from Git
+    - git pull origin main
+
+    # ✅ 2. Install dependencies for both backend and frontend
+    - npm install
+    - npm install --prefix frontend
+
+    # ✅ 3. Build the frontend (Vite)
+    - npm run build --prefix frontend
+
+    # ✅ 4. Move frontend build files to `public_html`
+    - rm -rf $DEPLOYPATH/frontend
+    - mv frontend/dist/* $DEPLOYPATH/
+
+    # ✅ 5. Start Backend (Express)
+    - pm2 restart backend || pm2 start backend/index.js --name "backend"
+
+  cleanup:
+    - echo "Cleaning up..."
